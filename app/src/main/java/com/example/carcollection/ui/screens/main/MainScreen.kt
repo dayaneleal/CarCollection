@@ -20,11 +20,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.automirrored.filled.Logout
-import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.ErrorOutline
-import androidx.compose.material.icons.filled.Speed
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -42,16 +38,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.carcollection.AppTheme
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.carcollection.ui.components.ErrorDetail
+import com.example.carcollection.ui.components.ErrorDisplay
+import com.example.carcollection.ui.components.ImageLoad
+import com.example.carcollection.ui.components.PrimaryButton
+import com.example.carcollection.ui.theme.AppTheme
 import com.example.carcollection.ui.theme.CarCollectionTheme
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(viewModel: MainViewModel) {
+fun MainScreen(viewModel: MainViewModel = viewModel()) {
     val state by viewModel.uiState.collectAsState()
 
     val colors = AppTheme.colors
@@ -88,31 +89,14 @@ fun MainScreen(viewModel: MainViewModel) {
                             modifier = Modifier.fillMaxSize(),
                             contentAlignment = Alignment.Center
                         ) {
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.spacedBy(16.dp)
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(64.dp)
-                                        .background(Color.Red, CircleShape),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Icon(
-                                        Icons.Default.ErrorOutline,
-                                        null,
-                                        tint = colors.onPrimary,
-                                        modifier = Modifier.size(32.dp)
-                                    )
-                                }
-
-                                Text(
-                                    text = state.errorMessage!!,
-                                    color = Color.White,
-                                    fontWeight = FontWeight.Bold,
-                                    textAlign = TextAlign.Center
-                                )
-                            }
+                            ErrorDisplay(
+                                detail = ErrorDetail(
+                                    title = "Ops! Algo deu errado",
+                                    icon = Icons.Default.ErrorOutline,
+                                    description = state.errorMessage
+                                ),
+                                showBackground = false
+                            )
                         }
                     }
                 else -> {
@@ -130,6 +114,7 @@ fun MainScreen(viewModel: MainViewModel) {
                                 car.name,
                                 car.year,
                                 car.licence,
+                                car.imageUrl
                             )
                         }
                     }
@@ -140,7 +125,7 @@ fun MainScreen(viewModel: MainViewModel) {
 }
 
 @Composable
-fun CarCard(model: String, year: String, plate: String,) {
+fun CarCard(model: String, year: String, plate: String, imageUrl: String,) {
     val colors = AppTheme.colors
 
     Card(
@@ -153,6 +138,7 @@ fun CarCard(model: String, year: String, plate: String,) {
             Box(modifier = Modifier
                 .height(180.dp)
                 .fillMaxWidth()) {
+                ImageLoad(imageUrl)
                 Box(modifier = Modifier
                     .fillMaxSize()
                     .background(Color.Black.copy(alpha = 0.3f)))
@@ -177,15 +163,11 @@ fun CarCard(model: String, year: String, plate: String,) {
                         Text(plate, color = Color.White, fontWeight = FontWeight.Bold)
                     }
 
-                    Button(
-                        onClick = { },
-                        colors = ButtonDefaults.buttonColors(containerColor = colors.primary),
-                        shape = RoundedCornerShape(8.dp),
-                        contentPadding = PaddingValues(horizontal = 16.dp)
-                    ) {
-                        Text("DETAILS", fontWeight = FontWeight.Black)
-                        Icon(Icons.AutoMirrored.Filled.ArrowForward, null, modifier = Modifier.size(16.dp))
-                    }
+                    PrimaryButton(
+                        text = "DETAILS",
+                        icon = Icons.AutoMirrored.Filled.ArrowForward,
+                        onClick = { }
+                    )
                 }
             }
         }
@@ -194,10 +176,8 @@ fun CarCard(model: String, year: String, plate: String,) {
 
 @Preview(showBackground = true)
 @Composable
-fun MainScreenPreview() {
+fun MainScreenPreviewContent() {
     CarCollectionTheme {
-        MainScreen(
-            viewModel = MainViewModel()
-        )
+        MainScreen()
     }
 }

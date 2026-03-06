@@ -35,7 +35,7 @@ class MainViewModel: ViewModel() {
                 }
                 is SafeResult.Error -> {
                     _uiState.update { it.copy(
-                        errorMessage = "Ops! Algo deu errado: ${result.message}",
+                        errorMessage = result.message,
                         isLoading = false
                     )}
                 }

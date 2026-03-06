@@ -36,10 +36,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.carcollection.AppTheme
+import com.example.carcollection.ui.components.ButtonSize
+import com.example.carcollection.ui.theme.AppTheme
 import com.example.carcollection.ui.components.PrimaryButton
 import com.example.carcollection.ui.components.SecondaryButton
 import com.example.carcollection.ui.components.TextFieldInput
@@ -92,7 +92,9 @@ fun LoginScreen(
 
                     PrimaryButton(
                         text = "SEND SMS",
-                        icon = Icons.AutoMirrored.Filled.Send
+                        icon = Icons.AutoMirrored.Filled.Send,
+                        size = ButtonSize.LARGE,
+                        modifier = Modifier.fillMaxWidth()
                     ) {
                         if (context is Activity) {
                             viewModel.sendVerificationCode(context, phoneNumber)
@@ -157,5 +159,3 @@ fun LoginHeader() {
         )
     }
 }
-
-

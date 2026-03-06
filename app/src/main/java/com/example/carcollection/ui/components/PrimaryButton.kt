@@ -1,42 +1,79 @@
 package com.example.carcollection.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.carcollection.AppTheme
+import com.example.carcollection.ui.theme.AppTheme
+
+enum class ButtonSize {
+    SMALL, MEDIUM, LARGE
+}
+
+data class ButtonProperties(
+    val height: Dp,
+    val horizontalPadding: Dp,
+    val iconSize: Dp,
+    val fontSize: TextUnit
+)
 
 @Composable
-fun PrimaryButton(text: String, icon: ImageVector, onClick: () -> Unit) {
+fun PrimaryButton(
+    text: String,
+    icon: ImageVector,
+    modifier: Modifier = Modifier,
+    size: ButtonSize = ButtonSize.MEDIUM,
+    onClick: () -> Unit
+) {
     val colors = AppTheme.colors
-    val gradient = Brush.horizontalGradient(listOf(colors.secondary, colors.primary))
+    
+    val properties = when (size) {
+        ButtonSize.SMALL -> ButtonProperties(height = 36.dp, horizontalPadding = 12.dp, iconSize = 14.dp, fontSize = 12.sp)
+        ButtonSize.MEDIUM -> ButtonProperties(height = 48.dp, horizontalPadding = 16.dp, iconSize = 16.dp, fontSize = 14.sp)
+        ButtonSize.LARGE -> ButtonProperties(height = 56.dp, horizontalPadding = 24.dp, iconSize = 20.dp, fontSize = 16.sp)
+    }
 
-    Button(
-        onClick = onClick,
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(56.dp)
-            .clip(RoundedCornerShape(12.dp))
-            .background(gradient),
-        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
+    Row(
+        modifier = modifier
+            .height(properties.height)
+            .clip(RoundedCornerShape(if (size == ButtonSize.SMALL) 8.dp else 12.dp))
+            .background(colors.primary)
+            .clickable { onClick() }
+            .padding(horizontal = properties.horizontalPadding),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(icon, null, tint = colors.onPrimary)
-        Spacer(Modifier.width(8.dp))
-        Text(text, fontWeight = FontWeight.ExtraBold, fontSize = 16.sp, color = colors.onPrimary)
+        Text(
+            text = text,
+            color = colors.onPrimary,
+            fontWeight = FontWeight.Black,
+            fontSize = properties.fontSize,
+            letterSpacing = if (size == ButtonSize.SMALL) 0.5.sp else 0.sp
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = colors.onPrimary,
+            modifier = Modifier.size(properties.iconSize)
+        )
     }
 }
