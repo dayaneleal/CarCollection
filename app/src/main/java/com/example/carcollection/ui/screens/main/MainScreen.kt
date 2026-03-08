@@ -2,38 +2,16 @@ package com.example.carcollection.ui.screens.main
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.ErrorOutline
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -42,19 +20,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.carcollection.ui.components.ErrorDetail
-import com.example.carcollection.ui.components.ErrorDisplay
-import com.example.carcollection.ui.components.ImageLoad
-import com.example.carcollection.ui.components.PrimaryButton
+import com.example.carcollection.domain.Car
+import com.example.carcollection.ui.components.*
 import com.example.carcollection.ui.theme.AppTheme
 import com.example.carcollection.ui.theme.CarCollectionTheme
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(viewModel: MainViewModel = viewModel()) {
+fun MainScreen(
+    onNavigate: (id: String) -> Unit,
+    viewModel: MainViewModel = viewModel()
+) {
     val state by viewModel.uiState.collectAsState()
-
     val colors = AppTheme.colors
 
     Scaffold(
@@ -64,13 +41,13 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
                     Text("CARCOLLECTION", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black, color = Color.White)
                 },
                 actions = {
-                    IconButton(onClick = {}) {
-                        Icon(Icons.AutoMirrored.Filled.Logout, null,)
+                    IconButton(onClick = { /* Logout */ }) {
+                        Icon(Icons.AutoMirrored.Filled.Logout, null)
                     }
                 }
             )
         }
-    ){ innerPadding ->
+    ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -84,38 +61,28 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
                         CircularProgressIndicator(color = colors.primary)
                     }
                 }
-                    state.errorMessage != null -> {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            ErrorDisplay(
-                                detail = ErrorDetail(
-                                    title = "Ops! Algo deu errado",
-                                    icon = Icons.Default.ErrorOutline,
-                                    description = state.errorMessage
-                                ),
-                                showBackground = false
-                            )
-                        }
+                state.errorMessage != null -> {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        ErrorDisplay(
+                            detail = ErrorDetail(
+                                title = "Ops! Algo deu errado",
+                                icon = Icons.Default.ErrorOutline,
+                                description = state.errorMessage
+                            ),
+                            showBackground = false
+                        )
                     }
+                }
                 else -> {
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
                     Spacer(modifier = Modifier.height(36.dp))
-
                     LazyColumn(
                         verticalArrangement = Arrangement.spacedBy(20.dp),
                         contentPadding = PaddingValues(bottom = 80.dp)
                     ) {
                         items(state.cars) { car ->
-                            CarCard(
-                                car.name,
-                                car.year,
-                                car.licence,
-                                car.imageUrl
-                            )
+                            CarCard(car, onNavigate = { id ->
+                                onNavigate(id)
+                            })
                         }
                     }
                 }
@@ -125,7 +92,7 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
 }
 
 @Composable
-fun CarCard(model: String, year: String, plate: String, imageUrl: String,) {
+fun CarCard(car: Car, onNavigate: (id: String) -> Unit) {
     val colors = AppTheme.colors
 
     Card(
@@ -138,17 +105,17 @@ fun CarCard(model: String, year: String, plate: String, imageUrl: String,) {
             Box(modifier = Modifier
                 .height(180.dp)
                 .fillMaxWidth()) {
-                ImageLoad(imageUrl)
+                ImageLoad(car.imageUrl)
                 Box(modifier = Modifier
                     .fillMaxSize()
                     .background(Color.Black.copy(alpha = 0.3f)))
             }
 
             Column(modifier = Modifier.padding(16.dp)) {
-                Text(model, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black, color = Color.White)
+                Text(car.name, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black, color = Color.White)
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(year, color = colors.secondary, fontWeight = FontWeight.Bold)
+                    Text(car.year, color = colors.secondary, fontWeight = FontWeight.Bold)
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -160,13 +127,15 @@ fun CarCard(model: String, year: String, plate: String, imageUrl: String,) {
                 ) {
                     Column {
                         Text("LICENSE PLATE", fontSize = 10.sp, color = Color.Gray, fontWeight = FontWeight.Bold)
-                        Text(plate, color = Color.White, fontWeight = FontWeight.Bold)
+                        Text(car.licence, color = Color.White, fontWeight = FontWeight.Bold)
                     }
 
                     PrimaryButton(
                         text = "DETAILS",
                         icon = Icons.AutoMirrored.Filled.ArrowForward,
-                        onClick = { }
+                        onClick = {
+                            onNavigate(car.id)
+                        }
                     )
                 }
             }
@@ -178,6 +147,6 @@ fun CarCard(model: String, year: String, plate: String, imageUrl: String,) {
 @Composable
 fun MainScreenPreviewContent() {
     CarCollectionTheme {
-        MainScreen()
+        MainScreen(onNavigate = {})
     }
 }

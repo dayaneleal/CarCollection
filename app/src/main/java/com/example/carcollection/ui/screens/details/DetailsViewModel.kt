@@ -1,35 +1,35 @@
-package com.example.carcollection.ui.screens.main
+package com.example.carcollection.ui.screens.details
 
-import android.app.Application
-import android.util.Log
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.carcollection.data.service.RetrofitClient
 import com.example.carcollection.data.service.SafeResult
 import com.example.carcollection.data.service.safeApiCall
+import com.example.carcollection.domain.Car
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class MainViewModel: ViewModel()  {
+data class DetailsUiState(
+    val car: Car? = null,
+    val isLoading: Boolean = false,
+    val errorMessage: String? = null
+)
 
-    private val _uiState = MutableStateFlow(CarsUiState())
+class DetailsViewModel : ViewModel() {
+
+    private val _uiState = MutableStateFlow(DetailsUiState())
     val uiState = _uiState.asStateFlow()
 
-    init {
-        fetchCars()
-    }
-
-    fun fetchCars() {
+    fun fetchCarDetails(id: String) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
-            val result = safeApiCall { RetrofitClient.apiService.getCars() }
+            val result = safeApiCall { RetrofitClient.apiService.getCarById(id) }
 
             when(result) {
                 is SafeResult.Success -> {
-                    _uiState.update { it.copy(cars = result.data, isLoading = false) }
+                    _uiState.update { it.copy(car = result.data, isLoading = false) }
                 }
                 is SafeResult.Error -> {
                     _uiState.update { it.copy(errorMessage = result.message, isLoading = false) }
@@ -37,7 +37,4 @@ class MainViewModel: ViewModel()  {
             }
         }
     }
-
 }
-
-
