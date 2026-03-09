@@ -15,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
@@ -41,6 +42,7 @@ fun PrimaryButton(
     icon: ImageVector,
     modifier: Modifier = Modifier,
     size: ButtonSize = ButtonSize.MEDIUM,
+    enabled: Boolean = true,
     onClick: () -> Unit
 ) {
     val colors = AppTheme.colors
@@ -55,8 +57,8 @@ fun PrimaryButton(
         modifier = modifier
             .height(properties.height)
             .clip(RoundedCornerShape(if (size == ButtonSize.SMALL) 8.dp else 12.dp))
-            .background(colors.primary)
-            .clickable { onClick() }
+            .background(if (enabled) colors.primary else colors.primary.copy(alpha = 0.5f))
+            .then(if (enabled) Modifier.clickable { onClick() } else Modifier)
             .padding(horizontal = properties.horizontalPadding),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically

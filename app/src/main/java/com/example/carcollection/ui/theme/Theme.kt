@@ -10,6 +10,7 @@ private val DarkColorScheme = darkColorScheme(
     secondary = SecondaryColor,
     background = DarkBackground,
     surface = CardSurfaceColor,
+    onSurfaceVariant = GrayText,
     outline = InputStrokeColor,
     onPrimary = Color.White,
     onBackground = Color.White,
@@ -17,7 +18,7 @@ private val DarkColorScheme = darkColorScheme(
 )
 
 @Composable
-fun CarCollectionTheme(
+fun CarCollectorTheme(
     content: @Composable () -> Unit
 ) {
     MaterialTheme(

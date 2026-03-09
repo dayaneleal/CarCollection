@@ -14,21 +14,21 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.carcollection.R
 import com.example.carcollection.domain.Car
 import com.example.carcollection.ui.components.*
 import com.example.carcollection.ui.theme.AppTheme
-import com.example.carcollection.ui.theme.CarCollectionTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
     onNavigate: (id: String) -> Unit,
+    onLogout: () -> Unit,
     viewModel: MainViewModel = viewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
@@ -38,13 +38,22 @@ fun MainScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text("CARCOLLECTION", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black, color = Color.White)
+                    Text(
+                        text = stringResource(R.string.app_title),
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Black,
+
+                    )
                 },
                 actions = {
-                    IconButton(onClick = { /* Logout */ }) {
-                        Icon(Icons.AutoMirrored.Filled.Logout, null)
+                    IconButton(onClick = onLogout) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.Logout,
+                            contentDescription = null,
+                            tint = colors.onSurface
+                        )
                     }
-                }
+                },
             )
         }
     ) { innerPadding ->
@@ -65,7 +74,7 @@ fun MainScreen(
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         ErrorDisplay(
                             detail = ErrorDetail(
-                                title = "Ops! Algo deu errado",
+                                title = stringResource(R.string.error_title),
                                 icon = Icons.Default.ErrorOutline,
                                 description = state.errorMessage
                             ),
@@ -80,9 +89,7 @@ fun MainScreen(
                         contentPadding = PaddingValues(bottom = 80.dp)
                     ) {
                         items(state.cars) { car ->
-                            CarCard(car, onNavigate = { id ->
-                                onNavigate(id)
-                            })
+                            CarCard(car, onNavigate = onNavigate)
                         }
                     }
                 }
@@ -98,24 +105,37 @@ fun CarCard(car: Car, onNavigate: (id: String) -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
-        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.1f)),
+        border = BorderStroke(1.dp, colors.onSurface.copy(alpha = 0.1f)),
         colors = CardDefaults.cardColors(containerColor = colors.surface)
     ) {
         Column {
-            Box(modifier = Modifier
-                .height(180.dp)
-                .fillMaxWidth()) {
+            Box(
+                modifier = Modifier
+                    .height(180.dp)
+                    .fillMaxWidth()
+            ) {
                 ImageLoad(car.imageUrl)
-                Box(modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.Black.copy(alpha = 0.3f)))
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(colors.scrim.copy(alpha = 0.3f))
+                )
             }
 
             Column(modifier = Modifier.padding(16.dp)) {
-                Text(car.name, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black, color = Color.White)
+                Text(
+                    text = car.name,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Black,
+                    color = colors.onSurface
+                )
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(car.year, color = colors.secondary, fontWeight = FontWeight.Bold)
+                    Text(
+                        text = car.year,
+                        color = colors.secondary,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -126,27 +146,26 @@ fun CarCard(car: Car, onNavigate: (id: String) -> Unit) {
                     verticalAlignment = Alignment.Bottom
                 ) {
                     Column {
-                        Text("LICENSE PLATE", fontSize = 10.sp, color = Color.Gray, fontWeight = FontWeight.Bold)
-                        Text(car.licence, color = Color.White, fontWeight = FontWeight.Bold)
+                        Text(
+                            text = stringResource(R.string.license_plate_label),
+                            fontSize = 10.sp,
+                            color = colors.onSurfaceVariant,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = car.licence,
+                            color = colors.onSurface,
+                            fontWeight = FontWeight.Bold
+                        )
                     }
 
                     PrimaryButton(
-                        text = "DETAILS",
+                        text = stringResource(R.string.details_button),
                         icon = Icons.AutoMirrored.Filled.ArrowForward,
-                        onClick = {
-                            onNavigate(car.id)
-                        }
+                        onClick = { onNavigate(car.id) }
                     )
                 }
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun MainScreenPreviewContent() {
-    CarCollectionTheme {
-        MainScreen(onNavigate = {})
     }
 }

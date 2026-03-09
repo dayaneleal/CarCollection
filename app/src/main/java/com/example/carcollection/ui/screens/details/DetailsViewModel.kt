@@ -11,12 +11,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-data class DetailsUiState(
-    val car: Car? = null,
-    val isLoading: Boolean = false,
-    val errorMessage: String? = null
-)
-
 class DetailsViewModel : ViewModel() {
 
     private val _uiState = MutableStateFlow(DetailsUiState())
@@ -29,7 +23,7 @@ class DetailsViewModel : ViewModel() {
 
             when(result) {
                 is SafeResult.Success -> {
-                    _uiState.update { it.copy(car = result.data, isLoading = false) }
+                    _uiState.update { it.copy(car = result.data.value, isLoading = false) }
                 }
                 is SafeResult.Error -> {
                     _uiState.update { it.copy(errorMessage = result.message, isLoading = false) }
