@@ -1,6 +1,6 @@
 <resources>
     //Login
-    <string name="app_name">CarCollector</string>
+    <string name="app_name">CarCollection</string>
     <string name="verification_code_sent">Código de verificação enviado via SMS</string>
     <string name="invalid_code">Código inválido: %1$s</string>
     <string name="phone_label">TELEFONE</string>
@@ -12,7 +12,7 @@
     <string name="verifying">VERIFICANDO...</string>
     <string name="validate_code">VALIDAR CÓDIGO</string>
     //Main
-    <string name="app_title">CARCOLLECTOR</string>
+    <string name="app_title">CARCOLLECTION</string>
     <string name="app_subtitle">Seu app de controle de veículos</string>
     <string name="error_title">Ops! Algo deu errado</string>
     <string name="license_plate_label">PLACA</string>

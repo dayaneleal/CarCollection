@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.carcollection.R
-import com.example.carcollection.domain.Car
+import com.example.carcollection.domain.CarDetails
 import com.example.carcollection.ui.components.*
 import com.example.carcollection.ui.theme.AppTheme
 
@@ -88,7 +88,7 @@ fun MainScreen(
                         verticalArrangement = Arrangement.spacedBy(20.dp),
                         contentPadding = PaddingValues(bottom = 80.dp)
                     ) {
-                        items(state.cars) { car ->
+                        items(state.carDetails) { car ->
                             CarCard(car, onNavigate = onNavigate)
                         }
                     }
@@ -99,7 +99,7 @@ fun MainScreen(
 }
 
 @Composable
-fun CarCard(car: Car, onNavigate: (id: String) -> Unit) {
+fun CarCard(carDetails: CarDetails, onNavigate: (id: String) -> Unit) {
     val colors = AppTheme.colors
 
     Card(
@@ -114,7 +114,7 @@ fun CarCard(car: Car, onNavigate: (id: String) -> Unit) {
                     .height(180.dp)
                     .fillMaxWidth()
             ) {
-                ImageLoad(car.imageUrl)
+                ImageLoad(carDetails.imageUrl)
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -124,7 +124,7 @@ fun CarCard(car: Car, onNavigate: (id: String) -> Unit) {
 
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(
-                    text = car.name,
+                    text = carDetails.name,
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Black,
                     color = colors.onSurface
@@ -132,7 +132,7 @@ fun CarCard(car: Car, onNavigate: (id: String) -> Unit) {
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        text = car.year,
+                        text = carDetails.year,
                         color = colors.secondary,
                         fontWeight = FontWeight.Bold
                     )
@@ -153,7 +153,7 @@ fun CarCard(car: Car, onNavigate: (id: String) -> Unit) {
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            text = car.licence,
+                            text = carDetails.licence,
                             color = colors.onSurface,
                             fontWeight = FontWeight.Bold
                         )
@@ -162,7 +162,7 @@ fun CarCard(car: Car, onNavigate: (id: String) -> Unit) {
                     PrimaryButton(
                         text = stringResource(R.string.details_button),
                         icon = Icons.AutoMirrored.Filled.ArrowForward,
-                        onClick = { onNavigate(car.id) }
+                        onClick = { onNavigate(carDetails.id) }
                     )
                 }
             }

@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.carcollection.R
-import com.example.carcollection.domain.Car
+import com.example.carcollection.domain.CarDetails
 import com.example.carcollection.ui.components.ErrorDetail
 import com.example.carcollection.ui.components.ErrorDisplay
 import com.example.carcollection.ui.components.ImageLoad
@@ -101,8 +101,8 @@ fun DetailsScreen(
                     )
                 }
 
-                state.car != null -> {
-                    CarDetailsContent(car = state.car!!)
+                state.carDetails != null -> {
+                    CarDetailsContent(carDetails = state.carDetails!!)
                 }
             }
         }
@@ -110,7 +110,7 @@ fun DetailsScreen(
 }
 
 @Composable
-private fun CarDetailsContent(car: Car) {
+private fun CarDetailsContent(carDetails: CarDetails) {
     val colors = AppTheme.colors
     Column(
         modifier = Modifier
@@ -119,10 +119,10 @@ private fun CarDetailsContent(car: Car) {
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
-        ImageLoad(car.imageUrl)
+        ImageLoad(carDetails.imageUrl)
 
         Text(
-            text = car.name,
+            text = carDetails.name,
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.ExtraBold,
             color = colors.onSurface
@@ -136,19 +136,19 @@ private fun CarDetailsContent(car: Car) {
                 modifier = Modifier.weight(1f),
                 icon = Icons.Default.Fingerprint,
                 label = stringResource(R.string.id_label),
-                value = car.id
+                value = carDetails.id
             )
             InfoCard(
                 modifier = Modifier.weight(1f),
                 icon = Icons.Default.CalendarMonth,
                 label = stringResource(R.string.year_label),
-                value = car.year
+                value = carDetails.year
             )
             InfoCard(
                 modifier = Modifier.weight(1f),
                 icon = Icons.Default.LocationOn,
                 label = stringResource(R.string.license_plate_label),
-                value = car.licence
+                value = carDetails.licence
             )
         }
 
@@ -168,7 +168,7 @@ private fun CarDetailsContent(car: Car) {
                 )
             }
 
-            val carLocation = LatLng(car.place.lat, car.place.long)
+            val carLocation = LatLng(carDetails.place.lat, carDetails.place.long)
             val cameraPositionState = rememberCameraPositionState {
                 position = CameraPosition.fromLatLngZoom(carLocation, 15f)
             }
@@ -182,7 +182,7 @@ private fun CarDetailsContent(car: Car) {
             ) {
                 Marker(
                     state = rememberMarkerState(position = carLocation),
-                    title = car.name,
+                    title = carDetails.name,
                     snippet = stringResource(R.string.car_location_snippet)
                 )
             }

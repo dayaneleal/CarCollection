@@ -1,9 +1,9 @@
 package com.example.carcollection.ui.screens.details
 
-import com.example.carcollection.domain.Car
+import com.example.carcollection.domain.CarDetails
 
 data class DetailsUiState(
-    val car: Car? = null,
+    val carDetails: CarDetails? = null,
     val isLoading: Boolean = false,
     val errorMessage: String? = null
 )

@@ -19,7 +19,7 @@ suspend fun <T> safeApiCall(apiCall: suspend () -> T): SafeResult<T> {
                 SafeResult.Error(code, message)
             }
             else -> {
-                SafeResult.Error(0, e.message ?: "Unknown error")
+                SafeResult.Error(-1, e.message ?: "Unknown error")
             }
         }
     }

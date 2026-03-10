@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.google.maps.secrets)
+    alias(libs.plugins.ksp)
     id("com.google.gms.google-services")
 }
 
@@ -69,6 +70,9 @@ dependencies {
     implementation(libs.google.play.services.location)
     implementation(libs.google.play.services.maps)
     implementation(libs.maps.compose)
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    ksp(libs.room.compiler)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

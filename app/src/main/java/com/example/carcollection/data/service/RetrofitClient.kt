@@ -1,5 +1,8 @@
 package com.example.carcollection.data.service
 
+import com.example.carcollection.data.database.DatabaseBuilder
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -12,6 +15,15 @@ object RetrofitClient {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
+
+    private val loggingInterceptor = HttpLoggingInterceptor().apply {
+        level = HttpLoggingInterceptor.Level.BODY
+    }
+
+    private val okHttpClient = OkHttpClient.Builder()
+        .addInterceptor(GeoLocationInterceptor(DatabaseBuilder.getInstance().userLocationDao()))
+        .addInterceptor(loggingInterceptor)
+        .build()
 
      val apiService: ApiService by lazy {
         retrofit.create(ApiService::class.java)
