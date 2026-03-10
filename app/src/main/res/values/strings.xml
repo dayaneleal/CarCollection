@@ -1,5 +1,5 @@
 <resources>
-    //Login
+    <!-- Login -->
     <string name="app_name">CarCollection</string>
     <string name="verification_code_sent">Código de verificação enviado via SMS</string>
     <string name="invalid_code">Código inválido: %1$s</string>
@@ -11,17 +11,26 @@
     <string name="verification_code_placeholder">123456</string>
     <string name="verifying">VERIFICANDO...</string>
     <string name="validate_code">VALIDAR CÓDIGO</string>
-    //Main
+
+    <!-- Main -->
     <string name="app_title">CARCOLLECTION</string>
     <string name="app_subtitle">Seu app de controle de veículos</string>
     <string name="error_title">Ops! Algo deu errado</string>
     <string name="license_plate_label">PLACA</string>
     <string name="details_button">DETALHES</string>
-    //Details
+
+    <!-- Details -->
     <string name="details_title">DETALHES</string>
     <string name="back_button_content_description">Voltar</string>
     <string name="id_label">ID</string>
     <string name="year_label">ANO</string>
     <string name="current_location_label">Localização Atual</string>
     <string name="car_location_snippet">Localização do veículo</string>
+
+    <!-- Image Loading -->
+    <string name="car_image_content_description">Imagem do carro</string>
+    <string name="no_connection_title">Sem conexão</string>
+    <string name="check_internet_description">Verifique sua internet</string>
+    <string name="image_error_title">Erro de imagem</string>
+    <string name="invalid_url_description">URL inválida ou corrompida</string>
 </resources>

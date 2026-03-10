@@ -17,10 +17,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImagePainter
 import coil3.compose.SubcomposeAsyncImage
 import coil3.compose.SubcomposeAsyncImageContent
+import com.example.carcollection.R
 import com.example.carcollection.ui.theme.AppTheme
 import java.net.UnknownHostException
 
@@ -31,7 +33,7 @@ fun ImageLoad(url: String, modifier: Modifier = Modifier) {
 
     SubcomposeAsyncImage(
         model = url,
-        contentDescription = "Imagem do carro",
+        contentDescription = stringResource(R.string.car_image_content_description),
         modifier = modifier,
         contentScale = ContentScale.Crop,
         onState = { currentPainterState = it }
@@ -55,14 +57,14 @@ fun ImageLoad(url: String, modifier: Modifier = Modifier) {
             is AsyncImagePainter.State.Error -> {
                 val errorDetail = when (state.result.throwable) {
                     is UnknownHostException -> ErrorDetail(
-                        title = "Sem conexão",
+                        title = stringResource(R.string.no_connection_title),
                         icon = Icons.Default.CloudOff,
-                        description = "Verifique sua internet"
+                        description = stringResource(R.string.check_internet_description)
                     )
                     else -> ErrorDetail(
-                        title = "Erro de imagem",
+                        title = stringResource(R.string.image_error_title),
                         icon = Icons.Default.BrokenImage,
-                        description = "URL inválida ou corrompida"
+                        description = stringResource(R.string.invalid_url_description)
                     )
                 }
 
