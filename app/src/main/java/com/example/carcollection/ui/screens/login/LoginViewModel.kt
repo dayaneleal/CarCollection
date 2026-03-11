@@ -16,11 +16,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
-sealed class LoginUiEvent {
-    data class ShowError(val message: String) : LoginUiEvent()
-    object CodeSent : LoginUiEvent()
-}
-
 class LoginViewModel : ViewModel() {
     private val auth = FirebaseAuth.getInstance()
     
@@ -76,7 +71,8 @@ class LoginViewModel : ViewModel() {
     private fun signInWithCredential(credential: PhoneAuthCredential) {
         auth.signInWithCredential(credential).addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                _uiState.update { it.copy(shouldNavigate = true, isLoading = false) }
+                _uiState.update { it.copy(isLoading = false) }
+                viewModelScope.launch { _events.send(LoginUiEvent.NavigateToMain) }
             } else {
                 onError(task.exception?.message ?: "Código inválido")
             }

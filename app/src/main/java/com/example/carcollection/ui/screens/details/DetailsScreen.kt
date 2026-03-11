@@ -1,5 +1,6 @@
 package com.example.carcollection.ui.screens.details
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -8,6 +9,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.LocationOn
@@ -17,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -34,6 +37,7 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
+import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -44,9 +48,43 @@ fun DetailsScreen(
 ) {
     val state by viewModel.uiState.collectAsState()
     val colors = AppTheme.colors
+    val context = LocalContext.current
 
     LaunchedEffect(id) {
         viewModel.fetchCarDetails(id)
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.events.collectLatest { event ->
+            when (event) {
+                is DetailsUiEvent.ShowError -> {
+                    Toast.makeText(context, event.message, Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
+
+    if (state.showDeleteDialog) {
+        AlertDialog(
+            containerColor = colors.surface,
+            onDismissRequest = { viewModel.hideDeleteDialog() },
+            title = { Text(text = stringResource(R.string.delete_dialog_title)) },
+            text = { Text(text = stringResource(R.string.delete_dialog_message)) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.deleteCar(id, onSuccess = onBackClick)
+                    }
+                ) {
+                    Text(text = stringResource(R.string.delete_confirm), color = colors.primary)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { viewModel.hideDeleteDialog() }) {
+                    Text(text = stringResource(R.string.delete_cancel))
+                }
+            }
+        )
     }
 
     Scaffold(
@@ -67,6 +105,17 @@ fun DetailsScreen(
                             contentDescription = stringResource(R.string.back_button_content_description),
                             tint = colors.onSurface
                         )
+                    }
+                },
+                actions = {
+                    if (state.carDetails != null) {
+                        IconButton(onClick = { viewModel.showDeleteDialog() }) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = stringResource(R.string.delete_button_content_description),
+                                tint = colors.onSurface
+                            )
+                        }
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = colors.background)

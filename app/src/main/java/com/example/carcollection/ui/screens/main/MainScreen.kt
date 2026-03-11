@@ -14,6 +14,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.automirrored.filled.Logout
+import androidx.compose.material.icons.filled.DirectionsCar
 import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -26,6 +27,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.carcollection.R
 import com.example.carcollection.domain.CarDetails
@@ -43,6 +47,19 @@ fun MainScreen(
     val state by viewModel.uiState.collectAsState()
     val colors = AppTheme.colors
     val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                viewModel.fetchCars()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
 
     val locationPermissionLauncher = rememberLauncherForActivityResult(
          ActivityResultContracts.RequestPermission()
@@ -57,7 +74,7 @@ fun MainScreen(
     val checkLocationPermissionAndRequest = {
         val fineLocation = Manifest.permission.ACCESS_FINE_LOCATION
         val coarseLocation = Manifest.permission.ACCESS_COARSE_LOCATION
-        
+
         val hasFine = ContextCompat.checkSelfPermission(context, fineLocation) == PackageManager.PERMISSION_GRANTED
         val hasCoarse = ContextCompat.checkSelfPermission(context, coarseLocation) == PackageManager.PERMISSION_GRANTED
 
@@ -67,7 +84,7 @@ fun MainScreen(
             hasFine && hasCoarse -> {
                 viewModel.saveUserLocation()
             }
-            activity != null && (ActivityCompat.shouldShowRequestPermissionRationale(activity, fineLocation) || 
+            activity != null && (ActivityCompat.shouldShowRequestPermissionRationale(activity, fineLocation) ||
                                 ActivityCompat.shouldShowRequestPermissionRationale(activity, coarseLocation)) -> {
                 locationPermissionLauncher.launch(fineLocation)
             }
@@ -89,6 +106,7 @@ fun MainScreen(
                         text = stringResource(R.string.app_title),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Black,
+                        color = colors.onSurface
                     )
                 },
                 actions = {
@@ -100,6 +118,9 @@ fun MainScreen(
                         )
                     }
                 },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = colors.background
+                )
             )
         }
     ) { innerPadding ->
@@ -111,7 +132,7 @@ fun MainScreen(
                 .padding(horizontal = 16.dp)
         ) {
             when {
-                state.isLoading -> {
+                state.isLoading && state.carDetails.isEmpty()  -> {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         CircularProgressIndicator(color = colors.primary)
                     }
@@ -128,14 +149,28 @@ fun MainScreen(
                         )
                     }
                 }
+                state.carDetails.isEmpty() ->
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        ErrorDisplay(
+                            detail = ErrorDetail(
+                                title = stringResource(R.string.empty_state_title),
+                                icon = Icons.Default.DirectionsCar,
+                                description = stringResource(R.string.empty_state_description)
+                            ),
+                            showBackground = false
+                        )
+                    }
                 else -> {
                     Spacer(modifier = Modifier.height(36.dp))
                     LazyColumn(
                         verticalArrangement = Arrangement.spacedBy(20.dp),
                         contentPadding = PaddingValues(bottom = 80.dp)
                     ) {
-                        items(state.carDetails) { car ->
-                            CarCard(car, onNavigate = onNavigate)
+                        items(state.carDetails, key = { it.id }) { car ->
+                            CarCard(
+                                car,
+                                onNavigate = onNavigate,
+                                modifier = Modifier.animateItem(),)
                         }
                     }
                 }
@@ -145,11 +180,13 @@ fun MainScreen(
 }
 
 @Composable
-fun CarCard(carDetails: CarDetails, onNavigate: (id: String) -> Unit) {
+fun CarCard(carDetails: CarDetails,
+            onNavigate: (id: String) -> Unit,
+            modifier: Modifier = Modifier) {
     val colors = AppTheme.colors
 
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
         border = BorderStroke(1.dp, colors.onSurface.copy(alpha = 0.1f)),
         colors = CardDefaults.cardColors(containerColor = colors.surface)

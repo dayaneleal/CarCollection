@@ -10,7 +10,6 @@ import com.example.carcollection.data.database.model.UserLocation
 import com.example.carcollection.data.service.RetrofitClient
 import com.example.carcollection.data.service.SafeResult
 import com.example.carcollection.data.service.safeApiCall
-import com.example.carcollection.domain.CarDetails
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.firebase.storage.FirebaseStorage
@@ -21,10 +20,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.tasks.await
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -35,10 +31,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val imagesRef = storageRef.child("images")
     private val fusedLocationClient = LocationServices.getFusedLocationProviderClient(application)
     private val userLocationDao = DatabaseBuilder.getInstance(application).userLocationDao()
-
-    init {
-        fetchCars()
-    }
 
     fun fetchCars() {
         viewModelScope.launch {
@@ -69,7 +61,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     _uiState.update { it.copy(carDetails = finalCars, isLoading = false) }
                 }
                 is SafeResult.Error -> {
-                    _uiState.update { it.copy(errorMessage = result.message, isLoading = false) }
+                    _uiState.update { it.copy(
+                        errorMessage = result.message,
+                        isLoading = false)
+                    }
                 }
             }
         }

@@ -68,15 +68,13 @@ fun LoginScreen(
                 is LoginUiEvent.CodeSent -> {
                     Toast.makeText(context, codeSentMsg, Toast.LENGTH_SHORT).show()
                 }
+                is LoginUiEvent.NavigateToMain -> {
+                    onNavigate()
+                }
             }
         }
     }
 
-    LaunchedEffect(uiState.shouldNavigate) {
-        if (uiState.shouldNavigate) {
-            onNavigate()
-        }
-    }
 
     Scaffold { innerPadding ->
         Box(

@@ -20,6 +20,8 @@
     <string name="details_button">DETALHES</string>
     <string name="permission_denied_toast">Permissão de localização negada</string>
     <string name="location_saved_log">Localização salva no Room: %1$s, %2$s</string>
+    <string name="empty_state_title">Coleção Vazia</string>
+    <string name="empty_state_description">Parece que você ainda não tem carros cadastrados. Adicione seu primeiro veículo!</string>
 
     <!-- Details -->
     <string name="details_title">DETALHES</string>
@@ -30,6 +32,11 @@
     <string name="car_location_snippet">Localização do veículo</string>
     <string name="vehicle_details_title">Vehicle Details</string>
     <string name="vehicle_location_snippet">Vehicle Location</string>
+    <string name="delete_button_content_description">Deletar veículo</string>
+    <string name="delete_dialog_title">Confirmar exclusão</string>
+    <string name="delete_dialog_message">Tem certeza que deseja remover este veículo da sua coleção? Esta ação não pode ser desfeita.</string>
+    <string name="delete_confirm">DELETAR</string>
+    <string name="delete_cancel">CANCELAR</string>
 
     <!-- Image Loading -->
     <string name="car_image_content_description">Imagem do carro</string>
