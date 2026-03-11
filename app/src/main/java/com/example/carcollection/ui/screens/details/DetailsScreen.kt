@@ -1,5 +1,6 @@
 package com.example.carcollection.ui.screens.details
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -11,10 +12,7 @@ import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -102,7 +100,10 @@ fun DetailsScreen(
                 }
 
                 state.carDetails != null -> {
-                    CarDetailsContent(carDetails = state.carDetails!!)
+                    CarDetailsContent(
+                        carDetails = state.carDetails!!,
+                        isMapReady = state.isMapReady
+                    )
                 }
             }
         }
@@ -110,7 +111,7 @@ fun DetailsScreen(
 }
 
 @Composable
-private fun CarDetailsContent(carDetails: CarDetails) {
+private fun CarDetailsContent(carDetails: CarDetails, isMapReady: Boolean) {
     val colors = AppTheme.colors
     Column(
         modifier = Modifier
@@ -168,23 +169,36 @@ private fun CarDetailsContent(carDetails: CarDetails) {
                 )
             }
 
-            val carLocation = LatLng(carDetails.place.lat, carDetails.place.long)
-            val cameraPositionState = rememberCameraPositionState {
-                position = CameraPosition.fromLatLngZoom(carLocation, 15f)
-            }
-
-            GoogleMap(
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(250.dp)
-                    .clip(RoundedCornerShape(16.dp)),
-                cameraPositionState = cameraPositionState
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(colors.surface)
             ) {
-                Marker(
-                    state = rememberMarkerState(position = carLocation),
-                    title = carDetails.name,
-                    snippet = stringResource(R.string.car_location_snippet)
-                )
+                if (isMapReady) {
+                    val carLocation = LatLng(carDetails.place.lat, carDetails.place.long)
+                    val cameraPositionState = rememberCameraPositionState {
+                        position = CameraPosition.fromLatLngZoom(carLocation, 15f)
+                    }
+
+                    GoogleMap(
+                        modifier = Modifier.fillMaxSize(),
+                        cameraPositionState = cameraPositionState
+                    ) {
+                        Marker(
+                            state = rememberMarkerState(position = carLocation),
+                            title = carDetails.name,
+                            snippet = stringResource(R.string.car_location_snippet)
+                        )
+                    }
+                } else {
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.Center).size(24.dp),
+                        strokeWidth = 2.dp,
+                        color = colors.primary.copy(alpha = 0.5f)
+                    )
+                }
             }
         }
     }
