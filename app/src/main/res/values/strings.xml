@@ -18,6 +18,8 @@
     <string name="error_title">Ops! Algo deu errado</string>
     <string name="license_plate_label">PLACA</string>
     <string name="details_button">DETALHES</string>
+    <string name="permission_denied_toast">Permissão de localização negada</string>
+    <string name="location_saved_log">Localização salva no Room: %1$s, %2$s</string>
 
     <!-- Details -->
     <string name="details_title">DETALHES</string>
@@ -26,6 +28,8 @@
     <string name="year_label">ANO</string>
     <string name="current_location_label">Localização Atual</string>
     <string name="car_location_snippet">Localização do veículo</string>
+    <string name="vehicle_details_title">Vehicle Details</string>
+    <string name="vehicle_location_snippet">Vehicle Location</string>
 
     <!-- Image Loading -->
     <string name="car_image_content_description">Imagem do carro</string>

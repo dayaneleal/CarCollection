@@ -1,5 +1,10 @@
 package com.example.carcollection.ui.screens.main
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -14,15 +19,19 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.carcollection.R
 import com.example.carcollection.domain.CarDetails
 import com.example.carcollection.ui.components.*
 import com.example.carcollection.ui.theme.AppTheme
+import com.example.carcollection.utils.findActivity
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -33,6 +42,44 @@ fun MainScreen(
 ) {
     val state by viewModel.uiState.collectAsState()
     val colors = AppTheme.colors
+    val context = LocalContext.current
+
+    val locationPermissionLauncher = rememberLauncherForActivityResult(
+         ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            viewModel.saveUserLocation()
+        } else {
+            Toast.makeText(context, context.getString(R.string.permission_denied_toast), Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    val checkLocationPermissionAndRequest = {
+        val fineLocation = Manifest.permission.ACCESS_FINE_LOCATION
+        val coarseLocation = Manifest.permission.ACCESS_COARSE_LOCATION
+        
+        val hasFine = ContextCompat.checkSelfPermission(context, fineLocation) == PackageManager.PERMISSION_GRANTED
+        val hasCoarse = ContextCompat.checkSelfPermission(context, coarseLocation) == PackageManager.PERMISSION_GRANTED
+
+        val activity = context.findActivity()
+
+        when {
+            hasFine && hasCoarse -> {
+                viewModel.saveUserLocation()
+            }
+            activity != null && (ActivityCompat.shouldShowRequestPermissionRationale(activity, fineLocation) || 
+                                ActivityCompat.shouldShowRequestPermissionRationale(activity, coarseLocation)) -> {
+                locationPermissionLauncher.launch(fineLocation)
+            }
+            else -> {
+                locationPermissionLauncher.launch(fineLocation)
+            }
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        checkLocationPermissionAndRequest()
+    }
 
     Scaffold(
         topBar = {
@@ -42,7 +89,6 @@ fun MainScreen(
                         text = stringResource(R.string.app_title),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Black,
-
                     )
                 },
                 actions = {

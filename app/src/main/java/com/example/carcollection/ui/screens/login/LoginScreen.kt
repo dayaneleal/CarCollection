@@ -1,6 +1,5 @@
 package com.example.carcollection.ui.screens.login
 
-import android.app.Activity
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -47,6 +46,7 @@ import com.example.carcollection.ui.theme.AppTheme
 import com.example.carcollection.ui.components.PrimaryButton
 import com.example.carcollection.ui.components.SecondaryButton
 import com.example.carcollection.ui.components.TextFieldInput
+import com.example.carcollection.utils.findActivity
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
@@ -125,8 +125,9 @@ fun LoginScreen(
                         modifier = Modifier.fillMaxWidth(),
                         enabled = !uiState.isLoading
                     ) {
-                        if (context is Activity) {
-                            viewModel.sendVerificationCode(context)
+                        val activity = context.findActivity()
+                        if (activity != null) {
+                            viewModel.sendVerificationCode(activity)
                         }
                     }
 
